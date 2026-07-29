@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/chess_clock_model.dart';
 import '../models/time_control.dart';
+import 'digital_clock_screen.dart';
 
 enum ClockDisplayMode { digital, classic }
 
@@ -43,10 +44,16 @@ class _SetupScreenState extends State<SetupScreen> {
 
     final model = ChessClockModel(initialTime: time, incrementSeconds: increment);
 
-    // TEMPORARY: segment 3/4 will replace this with the real clock screens.
-    Navigator.of(context).push(MaterialPageRoute(
-      builder: (_) => _DebugPreviewScreen(model: model, mode: _mode),
-    ));
+    if (_mode == ClockDisplayMode.digital) {
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => DigitalClockScreen(model: model),
+      ));
+    } else {
+      // TEMPORARY: segment 4 will replace this with the real analog screen.
+      Navigator.of(context).push(MaterialPageRoute(
+        builder: (_) => _DebugPreviewScreen(model: model, mode: _mode),
+      ));
+    }
   }
 
   @override
