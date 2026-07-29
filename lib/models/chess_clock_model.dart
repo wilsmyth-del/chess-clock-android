@@ -33,7 +33,7 @@ class ChessClockModel extends ChangeNotifier {
   /// Arms the clock at the start of a game: matches official over-the-board
   /// rules, where the first player's clock is already running while they
   /// think about their first move, rather than waiting for a first tap.
-  void startGame([Player first = Player.one]) {
+  void startGame([Player first = Player.two]) {
     if (_activePlayer != null || _flaggedPlayer != null) return;
     _activePlayer = first;
     _resumeTicking();
