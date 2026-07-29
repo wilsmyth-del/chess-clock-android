@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/chess_clock_model.dart';
 import '../utils/duration_format.dart';
 import 'clock_control_bar.dart';
+import 'start_overlay.dart';
 
 class DigitalClockScreen extends StatelessWidget {
   final ChessClockModel model;
@@ -15,18 +16,24 @@ class DigitalClockScreen extends StatelessWidget {
         child: ListenableBuilder(
           listenable: model,
           builder: (context, _) {
-            return Column(
+            return Stack(
               children: [
-                Expanded(
-                  child: RotatedBox(
-                    quarterTurns: 2,
-                    child: _ClockHalf(player: Player.one, model: model),
-                  ),
+                Column(
+                  children: [
+                    Expanded(
+                      child: RotatedBox(
+                        quarterTurns: 2,
+                        child: _ClockHalf(player: Player.one, model: model),
+                      ),
+                    ),
+                    ClockControlBar(model: model),
+                    Expanded(
+                      child: _ClockHalf(player: Player.two, model: model),
+                    ),
+                  ],
                 ),
-                ClockControlBar(model: model),
-                Expanded(
-                  child: _ClockHalf(player: Player.two, model: model),
-                ),
+                if (!model.isStarted)
+                  Positioned.fill(child: StartOverlay(onStart: model.startGame)),
               ],
             );
           },

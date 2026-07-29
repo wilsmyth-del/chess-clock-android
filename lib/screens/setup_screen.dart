@@ -43,8 +43,7 @@ class _SetupScreenState extends State<SetupScreen> {
       increment = _selected!.incrementSeconds;
     }
 
-    final model = ChessClockModel(initialTime: time, incrementSeconds: increment)
-      ..startGame();
+    final model = ChessClockModel(initialTime: time, incrementSeconds: increment);
 
     if (_mode == ClockDisplayMode.digital) {
       Navigator.of(context).push(MaterialPageRoute(
