@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/chess_clock_model.dart';
 import '../models/time_control.dart';
+import 'analog_clock_screen.dart';
 import 'digital_clock_screen.dart';
 
 enum ClockDisplayMode { digital, classic }
@@ -49,9 +50,8 @@ class _SetupScreenState extends State<SetupScreen> {
         builder: (_) => DigitalClockScreen(model: model),
       ));
     } else {
-      // TEMPORARY: segment 4 will replace this with the real analog screen.
       Navigator.of(context).push(MaterialPageRoute(
-        builder: (_) => _DebugPreviewScreen(model: model, mode: _mode),
+        builder: (_) => AnalogClockScreen(model: model),
       ));
     }
   }
@@ -116,27 +116,6 @@ class _SetupScreenState extends State<SetupScreen> {
             ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class _DebugPreviewScreen extends StatelessWidget {
-  final ChessClockModel model;
-  final ClockDisplayMode mode;
-  const _DebugPreviewScreen({required this.model, required this.mode});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Preview (temporary)')),
-      body: Center(
-        child: Text(
-          '${mode.name} mode\n'
-          '${model.initialTime.inMinutes} min + ${model.incrementSeconds}s increment',
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.headlineSmall,
-        ),
       ),
     );
   }

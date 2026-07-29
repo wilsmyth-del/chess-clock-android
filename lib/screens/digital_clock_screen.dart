@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../models/chess_clock_model.dart';
+import '../utils/duration_format.dart';
+import 'clock_control_bar.dart';
 
 class DigitalClockScreen extends StatelessWidget {
   final ChessClockModel model;
@@ -21,7 +23,7 @@ class DigitalClockScreen extends StatelessWidget {
                     child: _ClockHalf(player: Player.one, model: model),
                   ),
                 ),
-                _ControlBar(model: model),
+                ClockControlBar(model: model),
                 Expanded(
                   child: _ClockHalf(player: Player.two, model: model),
                 ),
@@ -60,7 +62,7 @@ class _ClockHalf extends StatelessWidget {
         color: bg,
         alignment: Alignment.center,
         child: Text(
-          isFlagged ? 'FLAG' : _formatDuration(remaining),
+          isFlagged ? 'FLAG' : formatDuration(remaining),
           style: const TextStyle(
             color: Colors.white,
             fontSize: 64,
@@ -70,49 +72,4 @@ class _ClockHalf extends StatelessWidget {
       ),
     );
   }
-}
-
-class _ControlBar extends StatelessWidget {
-  final ChessClockModel model;
-  const _ControlBar({required this.model});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.black,
-      padding: const EdgeInsets.symmetric(vertical: 8),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          IconButton(
-            iconSize: 32,
-            icon: Icon(
-              model.isRunning ? Icons.pause : Icons.play_arrow,
-              color: model.isStarted ? Colors.white : Colors.grey,
-            ),
-            onPressed: model.isStarted
-                ? () => model.isRunning ? model.pause() : model.resume()
-                : null,
-          ),
-          const SizedBox(width: 24),
-          IconButton(
-            iconSize: 32,
-            icon: const Icon(Icons.refresh, color: Colors.white),
-            onPressed: model.reset,
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-String _formatDuration(Duration d) {
-  final abs = d.isNegative ? -d : d;
-  final hours = abs.inHours;
-  final minutes = abs.inMinutes % 60;
-  final seconds = abs.inSeconds % 60;
-  if (hours > 0) {
-    return '$hours:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-  }
-  return '${abs.inMinutes}:${seconds.toString().padLeft(2, '0')}';
 }
