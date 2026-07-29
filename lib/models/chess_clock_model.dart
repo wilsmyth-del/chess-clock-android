@@ -30,12 +30,20 @@ class ChessClockModel extends ChangeNotifier {
   bool get isRunning => _isRunning;
   bool get isStarted => _activePlayer != null;
 
+  /// Arms the clock at the start of a game: matches official over-the-board
+  /// rules, where the first player's clock is already running while they
+  /// think about their first move, rather than waiting for a first tap.
+  void startGame([Player first = Player.one]) {
+    if (_activePlayer != null || _flaggedPlayer != null) return;
+    _activePlayer = first;
+    _resumeTicking();
+  }
+
   /// Tap your own clock after making a move: applies the increment to
   /// yourself, then hands the turn (and the running clock) to the opponent.
-  /// Before the first move, either side may tap to begin the game.
   void tapPlayer(Player p) {
     if (_flaggedPlayer != null) return;
-    if (_activePlayer != null && _activePlayer != p) return;
+    if (_activePlayer != p) return;
 
     if (p == Player.one) {
       _remainingOne += Duration(seconds: incrementSeconds);
