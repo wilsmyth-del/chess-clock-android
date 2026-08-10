@@ -4,6 +4,7 @@ import '../models/chess_clock_model.dart';
 import '../theme/clock_palette.dart';
 import '../utils/duration_format.dart';
 import 'clock_control_bar.dart';
+import 'keep_awake.dart';
 import 'start_overlay.dart';
 
 class AnalogClockScreen extends StatelessWidget {
@@ -12,33 +13,37 @@ class AnalogClockScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: ClockPalette.walnutShadow,
-      body: SafeArea(
-        child: ListenableBuilder(
-          listenable: model,
-          builder: (context, _) {
-            return Stack(
-              children: [
-                Column(
-                  children: [
-                    Expanded(
-                      child: RotatedBox(
-                        quarterTurns: 2,
-                        child: _AnalogHalf(player: Player.one, model: model),
+    return KeepAwake(
+      child: Scaffold(
+        backgroundColor: ClockPalette.walnutShadow,
+        body: SafeArea(
+          child: ListenableBuilder(
+            listenable: model,
+            builder: (context, _) {
+              return Stack(
+                children: [
+                  Column(
+                    children: [
+                      Expanded(
+                        child: RotatedBox(
+                          quarterTurns: 2,
+                          child: _AnalogHalf(player: Player.one, model: model),
+                        ),
                       ),
+                      ClockControlBar(model: model),
+                      Expanded(
+                        child: _AnalogHalf(player: Player.two, model: model),
+                      ),
+                    ],
+                  ),
+                  if (!model.isStarted)
+                    Positioned.fill(
+                      child: StartOverlay(onStart: model.startGame),
                     ),
-                    ClockControlBar(model: model),
-                    Expanded(
-                      child: _AnalogHalf(player: Player.two, model: model),
-                    ),
-                  ],
-                ),
-                if (!model.isStarted)
-                  Positioned.fill(child: StartOverlay(onStart: model.startGame)),
-              ],
-            );
-          },
+                ],
+              );
+            },
+          ),
         ),
       ),
     );
