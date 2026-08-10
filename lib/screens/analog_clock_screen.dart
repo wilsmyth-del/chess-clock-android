@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
 import '../models/chess_clock_model.dart';
+import '../theme/clock_palette.dart';
 import '../utils/duration_format.dart';
 import 'clock_control_bar.dart';
 import 'start_overlay.dart';
@@ -12,7 +13,7 @@ class AnalogClockScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: ClockPalette.walnutShadow,
       body: SafeArea(
         child: ListenableBuilder(
           listenable: model,
@@ -59,7 +60,7 @@ class _AnalogHalf extends StatelessWidget {
     return GestureDetector(
       onTap: () => model.tapPlayer(player),
       child: Container(
-        color: Colors.black,
+        color: ClockPalette.walnut,
         alignment: Alignment.center,
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -75,13 +76,18 @@ class _AnalogHalf extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 14),
             Text(
               isFlagged ? 'FLAG' : formatDuration(remaining),
-              style: const TextStyle(
-                color: Colors.white,
+              style: TextStyle(
+                // Sits on the wooden case, not on the dial — so cream, and
+                // brass-toned when idle so it recedes with the rest of the half.
+                color: isFlagged
+                    ? ClockPalette.lacquer
+                    : (isActive ? ClockPalette.cream : ClockPalette.brassDim),
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
+                letterSpacing: 1.5,
               ),
             ),
           ],
@@ -111,21 +117,25 @@ class _ClockFacePainter extends CustomPainter {
     final center = size.center(Offset.zero);
     final radius = size.shortestSide / 2 * 0.85;
 
-    final faceColor = isFlagged
-        ? Colors.red.shade700
-        : (isActive ? Colors.green.shade600 : Colors.grey.shade800);
+    final faceColor =
+        ClockPalette.dialFor(isActive: isActive, isFlagged: isFlagged);
+    // Ink reads on cream; on the red flag face it doesn't, so switch to cream.
+    final markings = isFlagged ? ClockPalette.cream : ClockPalette.ink;
+
     canvas.drawCircle(center, radius, Paint()..color = faceColor);
+    // Brass bezel, thicker on the running side — same active cue as the
+    // digital half, so both modes signal identically.
     canvas.drawCircle(
       center,
       radius,
       Paint()
-        ..color = Colors.white24
+        ..color = isActive ? ClockPalette.brass : ClockPalette.brassDim
         ..style = PaintingStyle.stroke
-        ..strokeWidth = 4,
+        ..strokeWidth = isActive ? 6 : 3,
     );
 
     final tickPaint = Paint()
-      ..color = Colors.white70
+      ..color = markings.withValues(alpha: 0.55)
       ..strokeWidth = 2;
     for (int i = 0; i < 12; i++) {
       final angle = (i * 30) * pi / 180;
@@ -143,11 +153,20 @@ class _ClockFacePainter extends CustomPainter {
       center,
       center + handDirection * (radius * 0.75),
       Paint()
-        ..color = Colors.white
+        ..color = markings
         ..strokeWidth = 4
         ..strokeCap = StrokeCap.round,
     );
-    canvas.drawCircle(center, 6, Paint()..color = Colors.white);
+    // Brass centre cap, as on a real movement.
+    canvas.drawCircle(center, 6, Paint()..color = ClockPalette.brass);
+    canvas.drawCircle(
+      center,
+      6,
+      Paint()
+        ..color = markings.withValues(alpha: 0.4)
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1,
+    );
 
     // Flag marker at 12 o'clock: upright normally, falls flat at zero.
     canvas.save();
@@ -161,7 +180,8 @@ class _ClockFacePainter extends CustomPainter {
       ..close();
     canvas.drawPath(
       flagPath,
-      Paint()..color = isFlagged ? Colors.redAccent : Colors.white70,
+      Paint()
+        ..color = isFlagged ? ClockPalette.cream : ClockPalette.lacquer,
     );
     canvas.restore();
   }

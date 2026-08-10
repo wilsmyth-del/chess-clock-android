@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/chess_clock_model.dart';
+import '../theme/clock_palette.dart';
 
 class ClockControlBar extends StatelessWidget {
   final ChessClockModel model;
@@ -8,8 +9,15 @@ class ClockControlBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Colors.black,
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      // The brass rule between the two dials — the seam of the case.
+      decoration: const BoxDecoration(
+        color: ClockPalette.walnutDeep,
+        border: Border(
+          top: BorderSide(color: ClockPalette.brassDim),
+          bottom: BorderSide(color: ClockPalette.brassDim),
+        ),
+      ),
+      padding: const EdgeInsets.symmetric(vertical: 10),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
@@ -17,16 +25,17 @@ class ClockControlBar extends StatelessWidget {
             iconSize: 32,
             icon: Icon(
               model.isRunning ? Icons.pause : Icons.play_arrow,
-              color: model.isStarted ? Colors.white : Colors.grey,
+              color:
+                  model.isStarted ? ClockPalette.brass : ClockPalette.brassDim,
             ),
             onPressed: model.isStarted
                 ? () => model.isRunning ? model.pause() : model.resume()
                 : null,
           ),
-          const SizedBox(width: 24),
+          const SizedBox(width: 32),
           IconButton(
             iconSize: 32,
-            icon: const Icon(Icons.refresh, color: Colors.white),
+            icon: const Icon(Icons.refresh, color: ClockPalette.brass),
             onPressed: model.reset,
           ),
         ],

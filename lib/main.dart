@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'screens/setup_screen.dart';
+import 'theme/clock_palette.dart';
 
 void main() {
   runApp(const ChessClockApp());
@@ -12,7 +13,7 @@ class ChessClockApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Chess Clock',
-      theme: ThemeData(colorSchemeSeed: Colors.teal, useMaterial3: true),
+      theme: ClockPalette.theme(),
       home: const SetupScreen(),
     );
   }

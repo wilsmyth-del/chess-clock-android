@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/chess_clock_model.dart';
+import '../theme/clock_palette.dart';
 import '../utils/duration_format.dart';
 import 'clock_control_bar.dart';
 import 'start_overlay.dart';
@@ -11,7 +12,7 @@ class DigitalClockScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
+      backgroundColor: ClockPalette.walnutShadow,
       body: SafeArea(
         child: ListenableBuilder(
           listenable: model,
@@ -54,26 +55,39 @@ class _ClockHalf extends StatelessWidget {
     final isFlagged = model.flaggedPlayer == player;
     final remaining = model.remaining(player);
 
-    final Color bg;
-    if (isFlagged) {
-      bg = Colors.red.shade700;
-    } else if (isActive) {
-      bg = Colors.green.shade600;
-    } else {
-      bg = Colors.grey.shade800;
-    }
+    final dial = ClockPalette.dialFor(isActive: isActive, isFlagged: isFlagged);
+    final numeral =
+        ClockPalette.numeralFor(isActive: isActive, isFlagged: isFlagged);
 
     return GestureDetector(
       onTap: () => model.tapPlayer(player),
       child: Container(
-        color: bg,
-        alignment: Alignment.center,
-        child: Text(
-          isFlagged ? 'FLAG' : formatDuration(remaining),
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 64,
-            fontWeight: FontWeight.bold,
+        // The wooden case shows through as a margin, so each half reads as an
+        // inset dial rather than a full-bleed coloured panel.
+        padding: const EdgeInsets.all(10),
+        color: ClockPalette.walnut,
+        child: Container(
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: dial,
+            borderRadius: BorderRadius.circular(6),
+            // Brass bezel only on the running side — the second half of the
+            // active signal, alongside the brighter dial.
+            border: Border.all(
+              color: isActive ? ClockPalette.brass : ClockPalette.brassDim,
+              width: isActive ? 3 : 1,
+            ),
+          ),
+          child: Text(
+            isFlagged ? 'FLAG' : formatDuration(remaining),
+            style: TextStyle(
+              color: numeral,
+              fontSize: 64,
+              fontWeight: FontWeight.bold,
+              // Slight tracking stops the big numerals looking cramped on the
+              // cream dial the way tight default spacing did on black.
+              letterSpacing: 2,
+            ),
           ),
         ),
       ),
